@@ -31,7 +31,7 @@ public class PreProcessing {
 	private static final String SALESPERSON_LIST = "1. Search for parts \n"
 			+ "2. Sell a part \n"
 			+ "3. Return to the main menu";
-	private static final String CHOOSE_SEARCH_CRITERION = "Choose the Search criterion";
+	private static final String CHOOSE_SEARCH_CRITERION = "Choose the Search criterion: ";
 	private static final String SEARCH_CRITERION = "1. Part Name \n"
 			+ "2. Manufacturer Name";
 	private static final String ASK_FOR_KEYWORD = "Type in the Search Keyword: ";
@@ -65,6 +65,7 @@ public class PreProcessing {
     //error message
     private final static String INVALID_OPERATION = "Error! Please select again.";
     private final static String INVALID_ORDER = "Error! Please enter a valid order number";
+    private final static String INVALID_TYPE = "Error! Please enter a valid type";
     
     
     static String returnMessage = null;
@@ -89,7 +90,6 @@ public class PreProcessing {
 	        conn = DriverManager.getConnection(DB_Url, DB_User, DB_Password);
 	     }
 	     catch (Exception e ) {
-	    	 
 	    	 e.printStackTrace();
 	     }
 		//conn.close();
@@ -146,11 +146,11 @@ public class PreProcessing {
     			switch (sc.nextInt()){
     			case 1: 
     				Administrator.createTable();
-    				System.out.println();
+    				System.out.println(CREATE_TABLE_COMPLETE);
     				break;
     			case 2: 
     				Administrator.deleteTable();
-    				System.out.println();
+    				System.out.println(DELETE_TABLE_COMPLETE);
     				break;
     			case 3:
     				System.out.print(ASK_FOR_PATH);
@@ -194,36 +194,49 @@ public class PreProcessing {
 			System.out.println(SALESPERSON_MENU);
 			System.out.println(ASK_FOR_OPERATION);
 			System.out.println(SALESPERSON_LIST);
-			System.out.println(ENTER_CHOICE);
+			System.out.print(ENTER_CHOICE);
 			if (sc.hasNextInt()){
     			
     			switch (sc.nextInt()){
     			case 1: 
+    				
     				System.out.println(CHOOSE_SEARCH_CRITERION);
     				System.out.println(SEARCH_CRITERION);
     				System.out.print(CHOOSE_SEARCH_CRITERION);
     				if (sc.hasNextInt()){
     					type = sc.nextInt();
+    					while (type !=1 && type !=2 ){
+    						System.out.println(INVALID_ORDER);
+    						System.out.print(CHOOSE_SEARCH_CRITERION);
+    						if (sc.hasNextInt()){
+    							type = sc.nextInt();
+    						} else {
+    							System.out.println(INVALID_TYPE);
+    							System.out.print(CHOOSE_SEARCH_CRITERION);
+    						}
+    					}
     				} else {
     					System.out.print(CHOOSE_SEARCH_CRITERION);
     				}
-    				System.out.println();
     				System.out.print(ASK_FOR_KEYWORD);
     				if (sc.hasNext()){
     					keyword = sc.next();
+    					
     				} else {
+    					
     					System.out.print(ASK_FOR_KEYWORD);
     				}
-    				System.out.println();
     				System.out.println(CHOOSE_ORDER + "\n" + ORDER_LIST);
     				System.out.print(CHOOSE_SEARCH_CRITERION);
     				if (sc.hasNextInt()){
     					order = sc.nextInt();
-    					while (order !=1 || order !=2 ){
+    					while (order !=1 && order !=2 ){
     						System.out.println(INVALID_ORDER);
     						System.out.print(CHOOSE_SEARCH_CRITERION);
     						if (sc.hasNextInt()){
     							order = sc.nextInt();
+    							
+    							
     						} else {
     							System.out.print(CHOOSE_SEARCH_CRITERION);
     						}
@@ -231,23 +244,23 @@ public class PreProcessing {
     				} else {
     					System.out.print(CHOOSE_SEARCH_CRITERION);
     				}
-    				Salesperson.SearchStock(keyword,type, order);
+    				String re = Salesperson.SearchStock(keyword,type, order);
+    				System.out.println(re);
     				break;
     			case 2: 
     				int partid = 0;
     				int saleid = 0;
     				System.out.print(ASK_FOR_PARTID);
-    				while (partid!=0){
+    				while (partid == 0){
     					if (sc.hasNextInt()){
     						partid = sc.nextInt();
-    						System.out.println();
+    						
     					} else {
-    						System.out.println();
     						System.out.print(ASK_FOR_PARTID);
     					}
     				}
     				System.out.print(ASK_FOR_SALPID);
-    				while (partid!=0){
+    				while (saleid == 0){
     					if (sc.hasNextInt()){
     						saleid = sc.nextInt();
     						System.out.println();
@@ -289,26 +302,25 @@ public class PreProcessing {
     			
     			switch (sc.nextInt()){
     			case 1: 
-    				System.out.println();
-    				System.out.println(LOWER_EXPERIENCE);
-    				while (lower != -1){
+    				System.out.print(LOWER_EXPERIENCE);
+    				while (lower == -1){
     					if (sc.hasNextInt()){
     						lower = sc.nextInt();
-    						System.out.println();
     					} else {
-    						System.out.println();
-    	    				System.out.println(LOWER_EXPERIENCE);
+    	    				System.out.print(LOWER_EXPERIENCE);
     					}
     				}
-    				while (upper != -1){
+    				System.out.print(UPPER_EXPERIENCE);
+    				while (upper == -1){
     					if (sc.hasNextInt()){
     						upper = sc.nextInt();
-    						System.out.println();
+    						
     					} else {
-    						System.out.println();
-    	    				System.out.println(LOWER_EXPERIENCE);
+    						
+    	    				System.out.print(UPPER_EXPERIENCE);
     					}
     				}
+    				System.out.println();
     				
     			//	Manager.countNoOfRecordBasedOnExperneice(lower, upper);
     				break;
@@ -317,14 +329,14 @@ public class PreProcessing {
     				break;
     			case 3:
     				int noOfParts = 0;
-    				System.out.println();
+    				
     				System.out.print(TYPE_NO_OF_PARTS);
-    				while (noOfParts != 0){
+    				while (noOfParts == 0){
     					if (sc.hasNextInt()){
     						noOfParts = sc.nextInt();
-    						System.out.println();
+    					
     					} else {
-    						System.out.println();
+    						
     	    				System.out.print(TYPE_NO_OF_PARTS);
     					}
     				}

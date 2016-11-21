@@ -13,12 +13,21 @@ public class Salesperson {
 		Salesperson.connectDB();
 		// by part name
 		if (type == 1){
-			pstmt = conn.prepareStatement(Salesperson.Query.SEARCHPARTS[0]);
+			if (order == 1){
+				pstmt = conn.prepareStatement(Salesperson.Query.SEARCHPARTS[0]);
+			} else {
+				pstmt = conn.prepareStatement(Salesperson.Query.SEARCHPARTS[2]);
+			}
 			pstmt.setString(1, "%"+keyword+"%");
 			rs = pstmt.executeQuery(); // get query result
 			
+			
 		} else if (type == 2){  // by manufacturer name
-			pstmt = conn.prepareStatement(Salesperson.Query.SEARCHPARTS[1]);
+			if (order == 1){
+				pstmt = conn.prepareStatement(Salesperson.Query.SEARCHPARTS[1]);
+			} else {
+				pstmt = conn.prepareStatement(Salesperson.Query.SEARCHPARTS[3]);
+			}
 			pstmt.setString(1, "%"+keyword+"%");
 			rs = pstmt.executeQuery(); // get query result
 		} else {
@@ -27,13 +36,18 @@ public class Salesperson {
             PreProcessing.main_menu();
             
 		}
-		result = "|  Part ID   |  Part Name  |  Manufacturer Name  |   Category Name   |   Available Quantity   |   Warranty Period    |   Part Price   |";
-		while (rs.next()){
-			result += "|   "+rs.getInt(1) + "   |   " + rs.getString(2) + "   |   "
-					    + rs.getString(3) + "   |   " + rs.getString(4) + "   |   " 
-					    + rs.getInt(5) + "   |   " + rs.getInt(6) + "   |   " + rs.getInt(7) + "   | \n";
-			
+		if (rs.isBeforeFirst()){
+			result = "| Part ID | Part Name | Manufacturer Name | Category Name | Available Quantity | Warranty Period | Part Price | \n";
+			while (rs.next()){
+				result += "|   "+rs.getInt(1) + "   |   " + rs.getString(2) + "   |   "
+						    + rs.getString(3) + "   |   " + rs.getString(4) + "   |   " 
+						    + rs.getInt(5) + "   |   " + rs.getInt(6) + "   |   " + rs.getInt(7) + "   | \n";
+				
+			}
+		} else {
+			result = "Record not found!\nBack to salesperson menu";
 		}
+		
 		closeConDB();
 		return result;
 		
@@ -63,18 +77,20 @@ public class Salesperson {
             pstmt.executeUpdate();
             
             //print 
-            pstmt = conn.prepareStatement(Salesperson.Query.ADDTRANSACTION[3]);
+            pstmt = conn.prepareStatement(Salesperson.Query.ADDTRANSACTION[2]);
             pstmt.setInt(1, partid);
             rs = pstmt.executeQuery();
-            result = "Product:  " + rs.getString(1) + " (id: " + partid +") Remaining Quantity: " + rs.getInt(3);
-            
+            if (rs.next()){
+            	result = "Product:  " + rs.getString(1) + " (id: " + partid +") Remaining Quantity: " + rs.getInt(2);
+            } else {
+            	result = "Unable to display the available quantity.";
+            }
 		} else {
 			PreProcessing.salesperson();
 		}	
 		closeConDB();
 		return result;
-	}
-    
+	} 
     private static boolean checkStock (int partid, int saleid) throws SQLException{
     	boolean isAvailable = false;
     	
@@ -91,7 +107,7 @@ public class Salesperson {
     		}
     	}
     	// check stock
-    	pstmt = conn.prepareStatement(Salesperson.Query.CHECK[1]);
+    	pstmt = conn.prepareStatement(Salesperson.Query.CHECK[2]);
     	pstmt.setInt(1, partid);
     	rs = pstmt.executeQuery();
     	
@@ -100,7 +116,7 @@ public class Salesperson {
     			System.out.println("Warning: part ID is not exist!");
     			return false;
     		} else {
-    			if (rs.getInt(7) == 0){
+    			if (rs.getInt(2) == 0){
     				isAvailable = false;
     				break;
     			} else {
@@ -109,9 +125,6 @@ public class Salesperson {
     			}
     		}
     	}
-    	
-    	
-    	Salesperson.closeConDB();
 		return isAvailable;
     }
     
@@ -131,26 +144,29 @@ public class Salesperson {
     
     private static class Query {
     	public final static String[] SEARCHPARTS = {
-    			"SELECT P.pID, P.pName, M.mName, C.cName, P.pAvailableQuantity, P.pWarrantPeriod, P.pPrice FROM category C, manufacturer M, part P WHERE P.mID = M.mID AND P.cID = C.cID AND P.pName LIKE ? ORDER BY P.pPrice",
-    			"SELECT P.pID, P.pName, M.mName, C.cName, P.pAvailableQuantity, P.pWarrantPeriod, P.pPrice FROM category C, manufacturer M, part P WHERE P.mID = M.mID AND P.cID = C.cID AND M.mName LIKE ? ORDER BY P.pPrice"
+    			"SELECT P.pID, P.pName, M.mName, C.cName, P.pAvailableQuantity, P.pWarrentyPeriod, P.pPrice FROM category C, manufacturer M, part P WHERE P.mID = M.mID AND P.cID = C.cID AND P.pName LIKE ? ORDER BY P.pPrice",
+    			"SELECT P.pID, P.pName, M.mName, C.cName, P.pAvailableQuantity, P.pWarrentyPeriod, P.pPrice FROM category C, manufacturer M, part P WHERE P.mID = M.mID AND P.cID = C.cID AND M.mName LIKE ? ORDER BY P.pPrice",
+    			"SELECT P.pID, P.pName, M.mName, C.cName, P.pAvailableQuantity, P.pWarrentyPeriod, P.pPrice FROM category C, manufacturer M, part P WHERE P.mID = M.mID AND P.cID = C.cID AND P.pName LIKE ? ORDER BY P.pPrice DESC",
+    			"SELECT P.pID, P.pName, M.mName, C.cName, P.pAvailableQuantity, P.pWarrentyPeriod, P.pPrice FROM category C, manufacturer M, part P WHERE P.mID = M.mID AND P.cID = C.cID AND M.mName LIKE ? ORDER BY P.pPrice DESC"
 
     	};
     	
     	public final static String[] ADDTRANSACTION ={
 
                 "INSERT INTO transactions VALUES (?,?,?, CURRENT_DATE)",
-                "UPDATE part SET pAvailableQuantity = pAvailableQuantity - 1 WHERE p_id = ?",
-                "SELECT P.pName, P.pID, P.pAvailableQuantity FROM part P WHERE P.p_id = ?"
+                "UPDATE part SET pAvailableQuantity = pAvailableQuantity - 1 WHERE pID = ?",
+                "SELECT P.pName, P.pAvailableQuantity FROM part P WHERE P.pID = ?"
 
         };
     	
     	public final static String[] CHECK ={
 
-                "SELECT COUNT(*) FROM salesperson s WHERE S.sID = ?",
-                "SELECT COUNT(*) FROM part P where P.pID = ?"
+                "SELECT COUNT(*) FROM salesperson S WHERE S.sID = ?",
+                "SELECT COUNT(*) FROM part P where P.pID = ?",
+                "SELECT pID ,pAvailableQuantity FROM part where pID = ?"
         };
     	
-    	public final static String GETTRANSACTIONID = "SELECT COUNT(*) FROM transaction";
+    	public final static String GETTRANSACTIONID = "SELECT COUNT(*) FROM transactions";
     }
 
 }
