@@ -144,10 +144,10 @@ public class Salesperson {
     
     private static class Query {
     	public final static String[] SEARCHPARTS = {
-    			"SELECT P.pID, P.pName, M.mName, C.cName, P.pAvailableQuantity, P.pWarrentyPeriod, P.pPrice FROM category C, manufacturer M, part P WHERE P.mID = M.mID AND P.cID = C.cID AND P.pName LIKE ? ORDER BY P.pPrice",
-    			"SELECT P.pID, P.pName, M.mName, C.cName, P.pAvailableQuantity, P.pWarrentyPeriod, P.pPrice FROM category C, manufacturer M, part P WHERE P.mID = M.mID AND P.cID = C.cID AND M.mName LIKE ? ORDER BY P.pPrice",
-    			"SELECT P.pID, P.pName, M.mName, C.cName, P.pAvailableQuantity, P.pWarrentyPeriod, P.pPrice FROM category C, manufacturer M, part P WHERE P.mID = M.mID AND P.cID = C.cID AND P.pName LIKE ? ORDER BY P.pPrice DESC",
-    			"SELECT P.pID, P.pName, M.mName, C.cName, P.pAvailableQuantity, P.pWarrentyPeriod, P.pPrice FROM category C, manufacturer M, part P WHERE P.mID = M.mID AND P.cID = C.cID AND M.mName LIKE ? ORDER BY P.pPrice DESC"
+    			"SELECT P.pID, P.pName, M.mName, C.cName, P.pAvailableQuantity, P.pWarrantyPeriod, P.pPrice FROM category C, manufacturer M, part P WHERE P.mID = M.mID AND P.cID = C.cID AND P.pName LIKE ? ORDER BY P.pPrice",
+    			"SELECT P.pID, P.pName, M.mName, C.cName, P.pAvailableQuantity, P.pWarrantyPeriod, P.pPrice FROM category C, manufacturer M, part P WHERE P.mID = M.mID AND P.cID = C.cID AND M.mName LIKE ? ORDER BY P.pPrice",
+    			"SELECT P.pID, P.pName, M.mName, C.cName, P.pAvailableQuantity, P.pWarrantyPeriod, P.pPrice FROM category C, manufacturer M, part P WHERE P.mID = M.mID AND P.cID = C.cID AND P.pName LIKE ? ORDER BY P.pPrice DESC",
+    			"SELECT P.pID, P.pName, M.mName, C.cName, P.pAvailableQuantity, P.pWarrantyPeriod, P.pPrice FROM category C, manufacturer M, part P WHERE P.mID = M.mID AND P.cID = C.cID AND M.mName LIKE ? ORDER BY P.pPrice DESC"
 
     	};
     	
@@ -166,7 +166,7 @@ public class Salesperson {
                 "SELECT pID ,pAvailableQuantity FROM part where pID = ?"
         };
     	
-    	public final static String GETTRANSACTIONID = "SELECT COUNT(*) FROM transactions";
+    	public final static String GETTRANSACTIONID = "SELECT COUNT(*) FROM transaction";
     }
 
 }

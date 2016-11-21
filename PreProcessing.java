@@ -52,7 +52,7 @@ public class PreProcessing {
 	private static final String UPPER_EXPERIENCE = "Type in the upper bound for years of experience: ";
 	private static final String PRINT_RECORD = "Transaction Record: ";
 	private static final String TYPE_NO_OF_PARTS = "Type in the number of parts: ";
-	
+	private static final String CREATE_TABLE_FAIL = "Processing...Error! Database is not initialized! Please try again";
 	
 	
 	
@@ -66,7 +66,8 @@ public class PreProcessing {
     private final static String INVALID_OPERATION = "Error! Please select again.";
     private final static String INVALID_ORDER = "Error! Please enter a valid order number";
     private final static String INVALID_TYPE = "Error! Please enter a valid type";
-    
+    private static final String LOAD_DATA_Fail = "Processing...Error! Data is not inputted to the database! Please try again!";
+    private static final String DELETE_TABLE_FAIL = "Processing...Error! Database is not removed! Please try again";
     
     static String returnMessage = null;
     
@@ -135,6 +136,7 @@ public class PreProcessing {
 	public static void administrator() throws SQLException{
 		Scanner sc = new Scanner(System.in);
 		String result = null;
+		Boolean isSucc = false;
 		while (true){
 			
 			System.out.println(ADMINISTRATOR_MENU);
@@ -145,28 +147,43 @@ public class PreProcessing {
     			
     			switch (sc.nextInt()){
     			case 1: 
-    				Administrator.createTable();
-    				System.out.println(CREATE_TABLE_COMPLETE);
+    				isSucc = Admin.createTable();
+    				if (isSucc){
+    					System.out.println(CREATE_TABLE_COMPLETE);
+    				} else {
+    					System.out.println(CREATE_TABLE_FAIL);
+    					administrator();
+    				}
     				break;
     			case 2: 
-    				Administrator.deleteTable();
-    				System.out.println(DELETE_TABLE_COMPLETE);
+    				isSucc = Admin.deleteTable();
+    				if (isSucc){
+    					System.out.println(DELETE_TABLE_COMPLETE);
+    				} else {
+    					System.out.println(DELETE_TABLE_FAIL);
+    					administrator();
+    				}
+    				
     				break;
     			case 3:
-    				System.out.print(ASK_FOR_PATH);
-    				if (sc.hasNext()){
-    					Administrator.loadData(sc.next());
-    					System.out.println();
+    				while (true){
+    					System.out.print(ASK_FOR_PATH);
+    					if (sc.hasNext()){
+    						isSucc = Admin.loadData(sc.next());
+    						break;
+    					} 
+    				}
+    				if (isSucc){
+    					System.out.println(LOAD_DATA_COMPLETE);
     				} else {
-    					System.out.println();
-    					System.out.println(ASK_FOR_PATH);
-    					sc.next();
+    					System.out.println(LOAD_DATA_Fail);
+    					administrator();
     				}
     				break;
     			case 4:
-    				result = Administrator.showNoOfRecords();
+    				result = Admin.showRecords();
     				System.out.println(result);
-    				System.out.println();
+    				break;
     			case 5:
     				return;
     				
@@ -292,6 +309,7 @@ public class PreProcessing {
 		int choice = 0;
 		int lower = -1; 
 		int upper = -1; 
+		String result = null;
 		while (true){
 			
 			System.out.println(MANAGER_MENU);
@@ -322,10 +340,12 @@ public class PreProcessing {
     				}
     				System.out.println();
     				
-    			//	Manager.countNoOfRecordBasedOnExperneice(lower, upper);
+    				result = Manager.countNoOfRecord(lower, upper);
+    				System.out.println(result);
     				break;
     			case 2: 
-    			//	Manager.ShowTotalSalesOfEachManufactuerer();
+    				result = Manager.sortAnListM();
+    				System.out.println(result);
     				break;
     			case 3:
     				int noOfParts = 0;
@@ -340,7 +360,8 @@ public class PreProcessing {
     	    				System.out.print(TYPE_NO_OF_PARTS);
     					}
     				}
-    			//	Manager.ShowNMostPopular(noOfParts);
+    			    result = Manager.showNamesPopularPart(noOfParts);
+    			    System.out.println(result);
     				break;
     			case 4:
     				return;
