@@ -153,7 +153,7 @@ public class Salesperson {
     	
     	public final static String[] ADDTRANSACTION ={
 
-                "INSERT INTO transactions VALUES (?,?,?, CURRENT_DATE)",
+                "INSERT INTO transaction VALUES (?,?,?, CURRENT_DATE)",
                 "UPDATE part SET pAvailableQuantity = pAvailableQuantity - 1 WHERE pID = ?",
                 "SELECT P.pName, P.pAvailableQuantity FROM part P WHERE P.pID = ?"
 
